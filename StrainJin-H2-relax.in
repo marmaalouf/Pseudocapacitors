@@ -1,0 +1,48 @@
+&CONTROL
+  calculation = 'relax',
+  etot_conv_thr = 1.D-4,
+  forc_conv_thr = 1.D-4,
+  max_seconds = 169200,
+  nstep = 400,
+  outdir = './out',
+  prefix = 'relax',
+  pseudo_dir = '/gpfs/group/ixd4/default/Simon/pseudopotentials/materialscloud/SSSP_1.3.0_PBE_efficiency',
+  restart_mode = 'from_scratch',
+  tprnfor = .TRUE.,
+  tstress = .TRUE.,
+  verbosity = 'low',
+/
+&SYSTEM
+  degauss = 0.03,
+  ecutrho = 500,
+  ecutwfc = 50,
+  ibrav = 0,
+  occupations = 'smearing',
+  smearing = 'mv',
+  nat = 2,
+  ntyp = 1,
+/
+&ELECTRONS
+  conv_thr = 1d-10,
+  diagonalization = 'david',
+  electron_maxstep = 200,
+  mixing_beta = 0.8,
+  mixing_mode = 'local-TF',
+  scf_must_converge = .TRUE.,
+/
+&IONS
+  ion_dynamics = 'bfgs',
+  upscale = 1000,
+/
+ATOMIC_SPECIES
+  H  1.0079 H.pbe-rrkjus_psl.1.0.0.UPF
+ATOMIC_POSITIONS angstrom 
+  H -0.37 0.0 0.0
+  H  0.37 0.0 0.0
+K_POINTS automatic
+2 2 1 1 1 0
+
+CELL_PARAMETERS bohr
+12.382446513930525 0.000000 0.000000
+0.000000 11.249116429971435 0.000000
+0.000000 0.000000 41.825308
