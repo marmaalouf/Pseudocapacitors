@@ -1,0 +1,2 @@
+usage: parser_testing.py [-h] --rootdir ROOTDIR
+parser_testing.py: error: unrecognized arguments: --gamma 0 3 45 --pH 43 594

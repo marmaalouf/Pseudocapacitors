@@ -1,0 +1,104 @@
+pbs file:
+#!/bin/bash
+#PBS -l nodes=1:ppn=20
+#PBS -l pmem=4gb
+#PBS -l walltime=48:00:00
+#PBS -j oe
+#PBS -A ixd4_g_g_bc_default
+
+cd $PBS_O_WORKDIR
+
+PW=/gpfs/group/ixd4/default/Simon/software/q-e/qe-7.2/build/bin/pw.x 
+mpiexec -n $PBS_NP $PW --environ -in RuO2-110-0-03.in > RuO2-110-0-03.out
+
+.in file:
+ restart_mode = 'from_scratch',
+ pseudo_dir = '/gpfs/group/ixd4/default/Simon/pseudopotentials/materialscloud/SSSP_1.3.0_PBE_efficiency',
+ outdir = '/storage/home/mgm6007/ixd4/Maria/Surface_Files/RuO2-110-0-03',
+
+ O 15.999400 O.pbe-n-kjpaw_psl.0.1.UPF
+ Ru 101.070000 Ru_ONCV_PBE-1.0.oncvpsp.upf
+ H 1.007940 H.pbe-rrkjus_psl.1.0.0.UPF
+
+Remove:
+-Slabz
+-wf_collect
+-nbd = 170
+
+environ file: 
+&ENVIRON
+ verbose = 2
+ environ_thr = 1.d-1
+ environ_type = 'water'
+ environ_restart = .TRUE.
+ env_electrostatic = .TRUE.
+/
+&BOUNDARY
+ solvent_mode = 'full'
+/
+&ELECTROSTATIC
+ pbc_correction = 'parabolic'
+ pbc_dim = 2
+ pbc_axis = 3
+ tol = 1.d-11
+/
+
+Calculations:
+Energy: (E0 - EH)/2
+Fermi: (Fermi + Gauss[stuff from solvent full]):  echo F+G | bc
+Lattice Parameters: x=a*sqrt(2), y=c*2, z=z
+
+a = celldm_a
+b = celldm_a
+c = celldm_a*celldm_ca
+
+RuO2 Relax:
+celldm_a=   8.55885816*0.529177210671212
+celldm_ca=   0.68712068
+
+a = 8.55885816
+b = 8.55885816
+c = 5.880968438922749
+
+TiO2 Relax:
+celldm_a=   8.76056906*0.529177210671212    
+celldm_ca=   0.63976640
+
+a = 8.76056906
+b = 8.76056906
+c = 5.604717729467583
+
+
+50%:
+a = 8.65971361
+b = 8.65971361
+c = 5.742843084195166
+
+Jin:
+x = (8.55885816*1.023)*math.sqrt(2) = 12.382446513930525
+y = (5.880968438922749*(1-0.0436))*2 = 11.249116429971435
+
+Useful Commands:
+    -To create the folders for each configuration:
+    mkdir RuO2-110-0-{0,01,012,0123,01234,012345,0124,0125,02,023,0234,02345,0235,024,0245,025,03,035,2,23,234,2345,24,25}
+    - To copy from folder to corresponding folder: 
+    paste file-list.txt destination-list.txt | xargs -n 2 sh -c 'cp "$0" "$1"'
+    - To copy same file in many folders:
+    echo "Strain1_Files/RuO2-110-0-"* | xargs -n 1 find Surface_Files/RuO2-110-0-/environ.in
+    find Strain2_Files/RuO2-110-0-* -type d -exec cp Surface_Files/RuO2-110-0-/environ.in {} \;
+    - To list Paths:
+    find -name RuO2*[!old].in | sort
+    find Strain1_Files -type d -name "RuO2-110-0-"* | sort
+    - To list a grepped item from multiple files:
+    find . -type f -exec grep -E 'bfgs converged' {} +
+    find . -name "*.out" | xargs grep -E 'bfgs converged'
+
+
+New Changes in .in File:
+ forc_conv_thr = 1.0D-4,
+ etot_conv_thr = 1.0D-4,
+ electron_maxstep = 100,
+ scf_must_converge = .FALSE.,
+ conv_thr = 1.0D-9
+And Update the ATOMIC_POSITIONS
+

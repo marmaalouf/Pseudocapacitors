@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "parser_testing.py", line 13, in <module>
+    print(vars(args)["config"], args.config, args.gamma, args.pH)
+KeyError: 'config'

@@ -1,0 +1,57 @@
+pbs file:
+#!/bin/bash
+#PBS -l nodes=1:ppn=20
+#PBS -l pmem=4gb
+#PBS -l walltime=48:00:00
+#PBS -j oe
+#PBS -A ixd4_g_g_bc_default
+
+cd $PBS_O_WORKDIR
+
+PW=/gpfs/group/ixd4/default/Simon/software/q-e/qe-7.2/build/bin/pw.x 
+mpiexec -n $PBS_NP $PW --environ -in RuO2-110-0-03.in > RuO2-110-0-03.out
+
+.in file:
+ restart_mode = 'from_scratch',
+ pseudo_dir = '/gpfs/group/ixd4/default/Simon/pseudopotentials/materialscloud/SSSP_1.3.0_PBE_efficiency',
+ outdir = '/storage/home/mgm6007/ixd4/Maria/Surface_Files/RuO2-110-0-03',
+
+ O 15.999400 O.pbe-n-kjpaw_psl.0.1.UPF
+ Ru 101.070000 Ru_ONCV_PBE-1.0.oncvpsp.upf
+ H 1.007940 H.pbe-rrkjus_psl.1.0.0.UPF
+
+Remove:
+-Slabz
+-wf_collect
+-nbd = 170
+
+environ file: 
+&ENVIRON
+ verbose = 2
+ environ_thr = 1.d-1
+ environ_type = 'water'
+ environ_restart = .TRUE.
+ env_electrostatic = .TRUE.
+/
+&BOUNDARY
+ solvent_mode = 'full'
+/
+&ELECTROSTATIC
+ pbc_correction = 'parabolic'
+ pbc_dim = 2
+ pbc_axis = 3
+ tol = 1.d-11
+/
+
+Calculations:
+Energy: (E0 - EH)/2
+Fermi: (Fermi + Gauss[stuff from solvent full]):  echo F+G | bc
+Lattice Parameters: x=a*sqrt(2), y=c*2, z=z
+
+RuO2 Relax:
+celldm_a=   8.579357*0.529177210671212
+celldm_ca=   0.691630*0.529177210671212
+
+TiO2 Relax:
+celldm_a=   8.806124*0.529177210671212    
+celldm_ca=   0.641631*0.529177210671212
