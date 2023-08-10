@@ -1,0 +1,11 @@
+#!/bin/bash
+#PBS -l nodes=1:ppn=20
+#PBS -l pmem=4gb
+#PBS -l walltime=48:00:00
+#PBS -j oe
+#PBS -A open
+
+cd $PBS_O_WORKDIR
+
+PW=/gpfs/group/ixd4/default/Simon/software/q-e/qe-7.2/build/bin/pw.x 
+mpiexec -n $PBS_NP $PW --environ -in RuO2-110-0-.in > RuO2-110-0-.out
